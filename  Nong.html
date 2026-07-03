@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#100D0B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="หนี้น้อง">
+<title>ตี๋เป็นหนี้ฉัน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#100D0B; --bg2:#171310; --panel:#1C1613; --panel2:#241C17; --panel3:#2C231C;
+  --line:#33291F; --line2:#3E3126;
+  --text:#F2EADF; --muted:#A89685; --faint:#6E6053;
+  --jade:#39C88C; --jade2:#28A876; --jadeDim:rgba(57,200,140,.15);
+  --gold:#DDB160; --goldDim:rgba(221,177,96,.14);
+  --amber:#E39A45; --danger:#DE6A54;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'IBM Plex Sans Thai',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --sat:env(safe-area-inset-top); --sab:env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(120% 60% at 50% -10%, #1c1712 0%, transparent 60%),
+    var(--bg);
+  color:var(--text); font-family:var(--sans);
+  -webkit-font-smoothing:antialiased; line-height:1.45;
+  min-height:100%;
+}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums; letter-spacing:-.01em}
+.wrap{max-width:460px; margin:0 auto; padding:calc(var(--sat) + 14px) 16px calc(var(--sab) + 32px)}
+button{font-family:inherit; color:inherit; cursor:pointer; border:none; background:none}
+:focus-visible{outline:2px solid var(--gold); outline-offset:2px; border-radius:8px}
+.hidden{display:none !important}
+
+/* ---------- LOCK ---------- */
+#lock{min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:calc(var(--sat) + 24px) 24px calc(var(--sab) + 24px); text-align:center}
+.lock-mark{width:58px; height:58px; border-radius:16px; display:grid; place-items:center;
+  background:linear-gradient(160deg,var(--panel3),var(--panel)); border:1px solid var(--line2);
+  box-shadow:0 10px 30px rgba(0,0,0,.45); margin-bottom:22px; font-size:26px}
+.lock-title{font-size:19px; font-weight:600; letter-spacing:.01em}
+.lock-sub{color:var(--muted); font-size:13px; margin-top:6px; min-height:18px}
+.dots{display:flex; gap:14px; margin:26px 0 8px}
+.dot{width:13px; height:13px; border-radius:50%; background:transparent; border:1.6px solid var(--line2);
+  transition:transform .15s, background .15s, border-color .15s}
+.dot.on{background:var(--gold); border-color:var(--gold)}
+.dots.err .dot.on{background:var(--danger); border-color:var(--danger)}
+.dots.shake{animation:shake .34s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.pad{display:grid; grid-template-columns:repeat(3,72px); gap:16px; margin-top:20px}
+.key{height:72px; border-radius:50%; font-family:var(--mono); font-size:25px; font-weight:500;
+  background:var(--panel); border:1px solid var(--line); color:var(--text);
+  display:grid; place-items:center; transition:transform .08s, background .15s}
+.key:active{transform:scale(.93); background:var(--panel2)}
+.key.act{color:var(--jade); font-size:22px}
+.key.act svg{width:26px;height:26px}
+.key.ghost{background:transparent; border:none}
+
+/* ---------- HEADER ---------- */
+.top{display:flex; align-items:center; justify-content:space-between; margin-bottom:20px}
+.brand{display:flex; align-items:center; gap:11px}
+.brand .b-ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:18px;
+  background:linear-gradient(160deg,var(--panel3),var(--panel)); border:1px solid var(--line2)}
+.brand h1{font-size:16px; font-weight:600; letter-spacing:.01em}
+.brand p{font-size:11px; color:var(--faint); margin-top:1px}
+.icobtn{width:40px;height:40px;border-radius:12px; background:var(--panel); border:1px solid var(--line);
+  display:grid; place-items:center; color:var(--muted); transition:background .15s}
+.icobtn:active{background:var(--panel2)}
+.icobtn svg{width:19px;height:19px}
+
+/* ---------- HERO ---------- */
+.hero{background:linear-gradient(165deg,#211A15 0%, #191411 100%); border:1px solid var(--line2);
+  border-radius:22px; padding:22px 20px 20px; box-shadow:0 14px 34px rgba(0,0,0,.4);
+  position:relative; overflow:hidden}
+.hero::before{content:""; position:absolute; inset:0; background:
+  radial-gradient(80% 120% at 100% 0%, var(--goldDim), transparent 55%); pointer-events:none}
+.hero-lab{font-size:12px; color:var(--gold); letter-spacing:.13em; text-transform:uppercase; font-weight:600}
+.hero-num{font-family:var(--mono); font-weight:600; font-size:44px; letter-spacing:-.02em; margin:6px 0 4px;
+  color:var(--text)}
+.hero-meta{font-size:12.5px; color:var(--muted)}
+.hero-meta b{color:var(--text); font-weight:600}
+.hbar{display:flex; gap:4px; margin-top:16px; height:12px}
+.seg{background:var(--jadeDim); border-radius:6px; overflow:hidden; position:relative;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.segfill{position:absolute; inset:0 auto 0 0; width:0;
+  background:linear-gradient(90deg,var(--jade2),var(--jade)); border-radius:6px; transition:width .55s cubic-bezier(.3,.9,.3,1)}
+.hleg{display:flex; gap:4px; margin-top:9px}
+.lg{display:flex; align-items:center; justify-content:center; gap:5px; font-size:11px; color:var(--faint)}
+.lg .lgp{font-family:var(--mono); color:var(--muted); font-size:10.5px}
+.hero-upd{font-size:10.5px; color:var(--faint); margin-top:14px; text-align:right}
+
+/* ---------- CARDS ---------- */
+.sect{font-size:11px; color:var(--faint); letter-spacing:.13em; text-transform:uppercase;
+  font-weight:600; margin:26px 4px 12px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:18px; margin-bottom:12px;
+  overflow:hidden; transition:border-color .2s}
+.card.open{border-color:var(--line2)}
+.card-head{display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:13px;
+  padding:16px; width:100%; text-align:left}
+.c-ic{width:42px;height:42px;border-radius:12px; display:grid; place-items:center; font-size:20px;
+  background:var(--panel2); border:1px solid var(--line2)}
+.c-mid{min-width:0}
+.c-title{font-size:14.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.c-note{font-size:11.5px; color:var(--faint); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.c-right{text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:1px}
+.c-remain{font-family:var(--mono); font-size:16px; font-weight:600; color:var(--gold)}
+.c-remain.done{color:var(--jade)}
+.c-rl{font-size:10px; color:var(--faint)}
+.c-barwrap{padding:0 16px}
+.c-bar{height:7px; background:var(--jadeDim); border-radius:5px; overflow:hidden; position:relative}
+.c-barfill{position:absolute; inset:0 auto 0 0; width:0;
+  background:linear-gradient(90deg,var(--jade2),var(--jade)); border-radius:5px; transition:width .5s cubic-bezier(.3,.9,.3,1)}
+.c-sub{display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); padding:9px 16px 0}
+.c-sub .paid{color:var(--jade)}
+.c-chev{color:var(--faint); transition:transform .28s; display:grid; place-items:center}
+.card.open .c-chev{transform:rotate(180deg); color:var(--muted)}
+.c-chev svg{width:17px;height:17px}
+.card-body{max-height:0; overflow:hidden; transition:max-height .34s ease}
+.card.open .card-body{max-height:2600px}
+.body-in{padding:15px 16px 17px}
+
+/* installment chips */
+.chips{display:grid; grid-template-columns:repeat(auto-fill,minmax(58px,1fr)); gap:8px}
+.chip{position:relative; padding:9px 4px 8px; border-radius:11px; text-align:center;
+  background:var(--panel2); border:1px solid var(--line2); transition:background .18s, border-color .18s, transform .1s}
+.chip:active{transform:scale(.95)}
+.chip .n{font-family:var(--mono); font-size:13px; font-weight:600; color:var(--muted)}
+.chip .d{font-size:9.5px; color:var(--faint); margin-top:1px}
+.chip.paid{background:var(--jadeDim); border-color:rgba(57,200,140,.45)}
+.chip.paid .n{color:var(--jade)}
+.chip.paid .d{color:var(--jade2)}
+.chip .ck{position:absolute; top:-6px; right:-6px; width:19px;height:19px;border-radius:50%;
+  background:var(--jade); display:none; place-items:center; box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.chip.paid .ck{display:grid}
+.chip .ck svg{width:11px;height:11px}
+.legend-hint{font-size:11px; color:var(--faint); margin-top:12px; text-align:center}
+
+/* trading payments */
+.pay-sum{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:13px;
+  padding-bottom:13px; border-bottom:1px solid var(--line)}
+.pay-sum .lab{font-size:12px; color:var(--muted)}
+.pay-sum .val{font-family:var(--mono); font-size:14px; font-weight:600; color:var(--jade)}
+.pay-list{display:flex; flex-direction:column; gap:2px; margin-bottom:14px}
+.pay-row{display:flex; align-items:center; gap:10px; padding:9px 2px}
+.pay-row .pd{flex:1; font-size:13px; color:var(--text)}
+.pay-row .pa{font-family:var(--mono); font-size:13.5px; font-weight:500; color:var(--jade)}
+.pay-row .px{width:30px;height:30px;border-radius:9px; display:grid; place-items:center; color:var(--faint);
+  background:var(--panel2); border:1px solid var(--line2); transition:color .15s, background .15s}
+.pay-row .px:active{color:var(--danger); background:var(--panel3)}
+.pay-row .px svg{width:14px;height:14px}
+.pay-empty{font-size:12.5px; color:var(--faint); text-align:center; padding:14px 0 4px}
+.add-form{display:grid; grid-template-columns:1fr 96px auto; gap:8px; align-items:center}
+.add-form input{font-family:var(--sans); font-size:13.5px; color:var(--text);
+  background:var(--panel2); border:1px solid var(--line2); border-radius:10px; padding:11px 12px; width:100%}
+.add-form input.amt{font-family:var(--mono); text-align:right}
+.add-form input::placeholder{color:var(--faint)}
+.add-form input:focus{border-color:var(--gold); outline:none}
+.add-btn{height:42px; padding:0 15px; border-radius:10px; font-size:13.5px; font-weight:600;
+  background:var(--jade); color:#0c2019; transition:filter .15s}
+.add-btn:active{filter:brightness(.9)}
+
+/* menu */
+.menu-mask{position:fixed; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(2px);
+  display:flex; align-items:flex-end; justify-content:center; z-index:40; padding:0 12px calc(var(--sab) + 12px)}
+.sheet{width:100%; max-width:436px; background:var(--bg2); border:1px solid var(--line2);
+  border-radius:20px; overflow:hidden; animation:rise .22s ease}
+@keyframes rise{from{transform:translateY(14px); opacity:.6}to{transform:translateY(0); opacity:1}}
+.sheet h3{font-size:12px; color:var(--faint); letter-spacing:.1em; text-transform:uppercase;
+  padding:16px 18px 8px; font-weight:600}
+.mrow{display:flex; align-items:center; gap:13px; padding:15px 18px; width:100%; text-align:left;
+  border-top:1px solid var(--line); font-size:14.5px; transition:background .15s}
+.mrow:active{background:var(--panel)}
+.mrow .mi{width:22px; display:grid; place-items:center; color:var(--muted)}
+.mrow .mi svg{width:18px;height:18px}
+.mrow.warn{color:var(--danger)}
+.mrow.warn .mi{color:var(--danger)}
+
+/* modal (backup) */
+.modal-mask{position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(3px);
+  display:flex; align-items:center; justify-content:center; z-index:50; padding:20px}
+.modal{width:100%; max-width:420px; background:var(--bg2); border:1px solid var(--line2);
+  border-radius:20px; padding:20px; animation:rise .2s ease}
+.modal h3{font-size:15px; font-weight:600; margin-bottom:6px}
+.modal p{font-size:12.5px; color:var(--muted); margin-bottom:12px}
+.modal textarea{width:100%; height:130px; resize:vertical; font-family:var(--mono); font-size:11.5px;
+  color:var(--text); background:var(--panel); border:1px solid var(--line2); border-radius:12px; padding:12px; line-height:1.5}
+.modal textarea:focus{border-color:var(--gold); outline:none}
+.modal-btns{display:flex; gap:10px; margin-top:14px}
+.mbtn{flex:1; height:44px; border-radius:12px; font-size:14px; font-weight:600; transition:filter .15s, background .15s}
+.mbtn.primary{background:var(--jade); color:#0c2019}
+.mbtn.ghost{background:var(--panel); border:1px solid var(--line2); color:var(--text)}
+.mbtn:active{filter:brightness(.92)}
+
+/* toast */
+.toast{position:fixed; left:50%; bottom:calc(var(--sab) + 26px); transform:translateX(-50%) translateY(20px);
+  background:var(--panel3); border:1px solid var(--line2); color:var(--text); font-size:13px;
+  padding:11px 18px; border-radius:30px; box-shadow:0 10px 30px rgba(0,0,0,.5); opacity:0;
+  transition:opacity .25s, transform .25s; z-index:60; pointer-events:none; max-width:88%}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+.enter{animation:up .5s cubic-bezier(.2,.8,.25,1) both}
+@keyframes up{from{opacity:0; transform:translateY(16px)}to{opacity:1; transform:translateY(0)}}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001s !important; transition-duration:.001s !important}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+"use strict";
+const KEY = "nong_debt_v1";
+
+/* ---------- default data ---------- */
+function makeDefault(){
+  const dates = ["พ.ย. 25","ธ.ค. 25","ม.ค. 26","ก.พ. 26","มี.ค. 26","เม.ย. 26","พ.ค. 26","มิ.ย. 26",
+                 "ก.ค. 26","ส.ค. 26","ก.ย. 26","ต.ค. 26","พ.ย. 26","ธ.ค. 26","ม.ค. 27","ก.พ. 27","มี.ค. 27","เม.ย. 27"];
+  return {
+    version:1, pinHash:null, pinLen:0, updatedAt:null,
+    debts:{
+      phone:{ title:"ค่าโทรศัพท์", emoji:"📱", note:"ราคาเครื่อง ฿36,900", per:2000,
+        inst: dates.map((d,i)=>({label:d, paid:i<8})) },
+      game:{ title:"หนี้ซื้อเกม (PS5)", emoji:"🎮", note:"PS5 Slim มือสอง · ฿1,105 × 12", per:1105,
+        inst: Array.from({length:12},(_,i)=>({label:"งวด "+(i+1), paid:false})) },
+      trading:{ title:"หนี้ทุนเทรด", emoji:"📈", note:"ทุนตั้งต้น ฿38,920", principal:38920,
+        pays:[
+          {date:"26 มี.ค. 69", amt:75},{date:"28 มี.ค. 69", amt:250},{date:"8 เม.ย. 69", amt:305},
+          {date:"9 เม.ย. 69", amt:81},{date:"14 เม.ย. 69", amt:269},{date:"18 เม.ย. 69", amt:188},
+          {date:"23 เม.ย. 69", amt:24},{date:"25 เม.ย. 69", amt:38},{date:"27 เม.ย. 69", amt:209.2},
+          {date:"29 เม.ย. 69", amt:150.8},{date:"3 เม.ย. 69", amt:492.8},{date:"3 ก.ค. 69", amt:332}
+        ]}
+    }
+  };
+}
+
+/* ---------- persistence ---------- */
+let data = null;
+let storageOk = true;
+function load(){ try{ const r=localStorage.getItem(KEY); return r?JSON.parse(r):null; }catch(e){ storageOk=false; return null; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ storageOk=false; toast("โหมดพรีวิว — บันทึกถาวรไม่ได้"); } }
+function touch(){ data.updatedAt=new Date().toISOString(); save(); }
+
+/* ---------- helpers ---------- */
+function hashPin(s){ let h=5381; for(let i=0;i<s.length;i++){ h=((h<<5)+h)+s.charCodeAt(i); h|=0; } return "h"+(h>>>0).toString(16); }
+function fmt(n){ const r=Math.round(n*100)/100; return "฿"+r.toLocaleString("en-US",{maximumFractionDigits:2}); }
+function pct(a,b){ return b>0 ? Math.round(a/b*100) : 0; }
+function el(html){ const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstChild; }
+const $=(s,r=document)=>r.querySelector(s);
+let toastT=null;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2200); }
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* icons */
+const IC={
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10.5" width="16" height="10" rx="2.4"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></svg>',
+  dots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="18" cy="12" r="1.9"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="#0c2019" stroke-width="3.2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 6l-6 6 6 6"/></svg>',
+  key:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M15 12v2"/></svg>',
+  save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5a1 1 0 011-1h11l4 4v11a1 1 0 01-1 1H5a1 1 0 01-1-1z"/><path d="M8 4v5h7M8 21v-6h8v6"/></svg>'
+};
+
+/* ---------- computation ---------- */
+function totals(){
+  const p=data.debts.phone, g=data.debts.game, t=data.debts.trading;
+  const pTotal=p.inst.length*p.per, pPaid=p.inst.filter(x=>x.paid).length*p.per;
+  const gTotal=g.inst.length*g.per, gPaid=g.inst.filter(x=>x.paid).length*g.per;
+  const tTotal=t.principal, tPaid=t.pays.reduce((s,x)=>s+(+x.amt||0),0);
+  const grandT=pTotal+gTotal+tTotal, grandP=pPaid+gPaid+tPaid;
+  return {p:{t:pTotal,paid:pPaid,rem:pTotal-pPaid,cntP:p.inst.filter(x=>x.paid).length,cnt:p.inst.length},
+          g:{t:gTotal,paid:gPaid,rem:gTotal-gPaid,cntP:g.inst.filter(x=>x.paid).length,cnt:g.inst.length},
+          t:{t:tTotal,paid:tPaid,rem:Math.max(0,tTotal-tPaid)},
+          grandT,grandP,grandRem:grandT-grandP};
+}
+
+/* =========================================================
+   LOCK SCREEN
+========================================================= */
+const ui={ mode:"unlock", stage:"", entry:"", temp:"" };
+
+function showLock(mode){
+  ui.mode=mode; ui.entry=""; ui.temp="";
+  if(mode==="set") ui.stage="new";
+  else if(mode==="change") ui.stage="verify";
+  else ui.stage="unlock";
+  renderLock();
+}
+function lockTitle(){
+  if(ui.mode==="set") return ui.stage==="new" ? "ตั้งรหัส PIN" : "ยืนยันรหัส PIN อีกครั้ง";
+  if(ui.mode==="change") return ui.stage==="verify" ? "ใส่รหัส PIN เดิม" : (ui.stage==="new" ? "ตั้งรหัส PIN ใหม่" : "ยืนยันรหัสใหม่");
+  return "ใส่รหัส PIN";
+}
+function lockSub(){
+  if(ui.mode==="set") return "ตั้งได้ 4–6 หลัก มีแค่คุณที่เข้าได้";
+  if(ui.mode==="change") return "";
+  return "แอปนี้ล็อกไว้ เฉพาะคุณเท่านั้น";
+}
+
+function renderLock(){
+  const root=$("#root");
+  const dots=Array.from({length:6},(_,i)=>`<div class="dot ${i<ui.entry.length?"on":""}"></div>`).join("");
+  root.innerHTML=`
+  <div id="lock">
+    <div class="lock-mark">${ui.mode==="set"?"🐾":IC.lock}</div>
+    <div class="lock-title" id="ltitle">${lockTitle()}</div>
+    <div class="lock-sub" id="lsub">${lockSub()}</div>
+    <div class="dots" id="dots">${dots}</div>
+    <div class="pad" id="pad">
+      ${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="key" data-k="${n}">${n}</button>`).join("")}
+      <button class="key ghost" data-k="back" aria-label="ลบ">${IC.back}</button>
+      <button class="key" data-k="0">0</button>
+      <button class="key act" data-k="ok" aria-label="ตกลง">${IC.check}</button>
+    </div>
+  </div>`;
+  $("#pad").addEventListener("click",e=>{ const b=e.target.closest("[data-k]"); if(b) keyPress(b.dataset.k); });
+}
+
+function setDots(){
+  const wrap=$("#dots"); if(!wrap) return;
+  wrap.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("on", i<ui.entry.length));
+  $("#ltitle").textContent=lockTitle();
+  $("#lsub").textContent=lockSub();
+}
+function lockError(msg){
+  const d=$("#dots"); d.classList.add("err","shake"); $("#lsub").textContent=msg;
+  setTimeout(()=>{ ui.entry=""; d.classList.remove("err","shake"); setDots(); },420);
+}
+
+function keyPress(k){
+  if(k==="back"){ ui.entry=ui.entry.slice(0,-1); setDots(); return; }
+  if(k==="ok"){ submitPin(); return; }
+  if(ui.entry.length>=6) return;
+  ui.entry+=k; setDots();
+  // auto-submit when matching known length
+  if(ui.mode==="unlock" && ui.entry.length===data.pinLen) submitPin();
+  else if(ui.stage==="verify" && ui.entry.length===data.pinLen) submitPin();
+  else if(ui.stage==="confirm" && ui.entry.length===ui.temp.length) submitPin();
+}
+
+function submitPin(){
+  const e=ui.entry;
+  if(ui.stage==="new"){
+    if(e.length<4){ lockError("ต้องมีอย่างน้อย 4 หลัก"); return; }
+    ui.temp=e; ui.entry=""; ui.stage="confirm"; setDots(); return;
+  }
+  if(ui.stage==="confirm"){
+    if(e===ui.temp){
+      data.pinHash=hashPin(e); data.pinLen=e.length; save();
+      toast(ui.mode==="change"?"เปลี่ยนรหัสแล้ว":"ตั้งรหัสเรียบร้อย");
+      enterApp();
+    } else { ui.temp=""; ui.stage="new"; lockError("รหัสไม่ตรงกัน ลองใหม่"); }
+    return;
+  }
+  if(ui.stage==="verify"){
+    if(hashPin(e)===data.pinHash){ ui.entry=""; ui.stage="new"; setDots(); }
+    else lockError("รหัสไม่ถูกต้อง");
+    return;
+  }
+  // unlock
+  if(hashPin(e)===data.pinHash) enterApp();
+  else lockError("รหัสไม่ถูกต้อง");
+}
+
+/* =========================================================
+   MAIN APP
+========================================================= */
+function enterApp(){
+  const root=$("#root");
+  root.innerHTML=`
+  <div class="wrap">
+    <div class="top enter">
+      <div class="brand">
+        <div class="b-ic">🐾</div>
+        <div><h1>ตี๋เป็นหนี้ฉัน</h1><p>บัญชีหนี้น้องชาย</p></div>
+      </div>
+      <button class="icobtn" id="btnMenu" aria-label="เมนู">${IC.dots}</button>
+    </div>
+
+    <div class="hero enter" style="animation-delay:.04s">
+      <div class="hero-lab">ยอดค้างทั้งหมด</div>
+      <div class="hero-num num" id="heroNum" data-v="0">฿0</div>
+      <div class="hero-meta" id="heroMeta"></div>
+      <div class="hbar">
+        <div class="seg" id="seg-phone" style="flex:36000"><div class="segfill"></div></div>
+        <div class="seg" id="seg-game" style="flex:13260"><div class="segfill"></div></div>
+        <div class="seg" id="seg-trading" style="flex:38920"><div class="segfill"></div></div>
+      </div>
+      <div class="hleg">
+        <div class="lg" style="flex:36000">📱<span class="lgp" id="lgp-phone">0%</span></div>
+        <div class="lg" style="flex:13260">🎮<span class="lgp" id="lgp-game">0%</span></div>
+        <div class="lg" style="flex:38920">📈<span class="lgp" id="lgp-trading">0%</span></div>
+      </div>
+      <div class="hero-upd" id="heroUpd"></div>
+    </div>
+
+    <div class="sect">รายการหนี้</div>
+    <div id="cards"></div>
+  </div>`;
+
+  buildCard("phone"); buildCard("game"); buildCard("trading");
+  $("#btnMenu").addEventListener("click", openMenu);
+  refresh(true);
+}
+
+function buildCard(id){
+  const d=data.debts[id];
+  const card=el(`<div class="card enter" id="card-${id}" data-id="${id}"></div>`);
+  card.style.animationDelay = (0.08 + ["phone","game","trading"].indexOf(id)*0.05)+"s";
+  card.innerHTML=`
+    <button class="card-head" data-act="toggle">
+      <div class="c-ic">${d.emoji}</div>
+      <div class="c-mid">
+        <div class="c-title">${d.title}</div>
+        <div class="c-note">${d.note}</div>
+      </div>
+      <div class="c-right">
+        <div class="c-remain num" id="rem-${id}">฿0</div>
+        <div class="c-rl">คงเหลือ</div>
+      </div>
+    </button>
+    <div class="c-barwrap"><div class="c-bar"><div class="c-barfill" id="bar-${id}"></div></div></div>
+    <div class="c-sub">
+      <span class="paid" id="sub-${id}"></span>
+      <span class="c-chev">${IC.chev}</span>
+    </div>
+    <div class="card-body"><div class="body-in" id="body-${id}"></div></div>`;
+  $("#cards").appendChild(card);
+
+  card.querySelector('[data-act="toggle"]').addEventListener("click",()=>card.classList.toggle("open"));
+  buildBody(id);
+}
+
+function buildBody(id){
+  const box=$("#body-"+id), d=data.debts[id];
+  if(id==="trading"){
+    box.innerHTML=`
+      <div class="pay-sum">
+        <span class="lab">ตี๋คืนแล้วทั้งหมด</span>
+        <span class="val num" id="tpaid">฿0</span>
+      </div>
+      <div class="pay-list" id="pay-list"></div>
+      <div class="add-form">
+        <input id="pay-date" placeholder="วันที่ (เช่น 5 ก.ค. 69)" />
+        <input id="pay-amt" class="amt" inputmode="decimal" placeholder="0" />
+        <button class="add-btn" id="pay-add">เพิ่ม</button>
+      </div>`;
+    box.querySelector("#pay-add").addEventListener("click", addPay);
+    box.querySelector("#pay-amt").addEventListener("keydown",e=>{ if(e.key==="Enter") addPay(); });
+    renderPays();
+  } else {
+    const grid=el('<div class="chips"></div>');
+    d.inst.forEach((it,i)=>{
+      const parts=it.label.split(" ");
+      const top = id==="game" ? (i+1) : (i+1);
+      const c=el(`<button class="chip ${it.paid?"paid":""}" data-idx="${i}">
+        <div class="ck">${IC.check}</div>
+        <div class="n">${id==="game"?(i+1):(i+1)}</div>
+        <div class="d">${id==="game"?"งวด":it.label}</div>
+      </button>`);
+      c.addEventListener("click",()=>toggleInst(id,i,c));
+      grid.appendChild(c);
+    });
+    box.appendChild(grid);
+    box.appendChild(el(`<div class="legend-hint">แตะที่งวดเพื่อทำเครื่องหมายว่าจ่ายแล้ว</div>`));
+  }
+}
+
+/* ---------- actions ---------- */
+function toggleInst(id,i,node){
+  const it=data.debts[id].inst[i];
+  it.paid=!it.paid;
+  node.classList.toggle("paid",it.paid);
+  touch(); refresh();
+}
+function renderPays(){
+  const list=$("#pay-list"); if(!list) return;
+  const pays=data.debts.trading.pays;
+  if(!pays.length){ list.innerHTML=`<div class="pay-empty">ยังไม่มีรายการคืนเงิน</div>`; return; }
+  list.innerHTML="";
+  pays.forEach((p,i)=>{
+    const row=el(`<div class="pay-row">
+      <span class="pd">${p.date||"—"}</span>
+      <span class="pa num">${fmt(+p.amt||0)}</span>
+      <button class="px" data-i="${i}" aria-label="ลบ">${IC.del}</button>
+    </div>`);
+    row.querySelector(".px").addEventListener("click",()=>{
+      if(confirm(`ลบรายการ "${p.date} · ${fmt(+p.amt||0)}" ?`)){
+        data.debts.trading.pays.splice(i,1); touch(); renderPays(); refresh();
+      }
+    });
+    list.appendChild(row);
+  });
+}
+function addPay(){
+  const dEl=$("#pay-date"), aEl=$("#pay-amt");
+  const date=dEl.value.trim();
+  const amt=parseFloat(aEl.value.replace(/[, ฿]/g,""));
+  if(!date){ dEl.focus(); toast("ใส่วันที่ก่อนนะ"); return; }
+  if(!amt||amt<=0){ aEl.focus(); toast("ใส่จำนวนเงินที่ถูกต้อง"); return; }
+  data.debts.trading.pays.push({date, amt});
+  dEl.value=""; aEl.value=""; touch(); renderPays(); refresh(); dEl.focus();
+}
+
+/* ---------- refresh dynamic UI ---------- */
+function animateNum(node,to){
+  if(reduce){ node.textContent=fmt(to); node.dataset.v=to; return; }
+  const from=parseFloat(node.dataset.v||"0"), start=performance.now(), dur=560;
+  function step(t){ let p=Math.min(1,(t-start)/dur); p=1-Math.pow(1-p,3);
+    node.textContent=fmt(from+(to-from)*p);
+    if(p<1) requestAnimationFrame(step); else { node.textContent=fmt(to); node.dataset.v=to; } }
+  requestAnimationFrame(step);
+}
+function refresh(anim){
+  const T=totals();
+  const hn=$("#heroNum");
+  if(anim) animateNum(hn,T.grandRem); else { hn.textContent=fmt(T.grandRem); hn.dataset.v=T.grandRem; }
+  $("#heroMeta").innerHTML=`จากทั้งหมด <b>${fmt(T.grandT)}</b> · จ่ายแล้ว <b>${pct(T.grandP,T.grandT)}%</b>`;
+
+  const setSeg=(id,paid,tot)=>{ const f=$("#seg-"+id+" .segfill"); if(f) f.style.width=pct(paid,tot)+"%";
+    const l=$("#lgp-"+id); if(l) l.textContent=pct(paid,tot)+"%"; };
+  setSeg("phone",T.p.paid,T.p.t); setSeg("game",T.g.paid,T.g.t); setSeg("trading",T.t.paid,T.t.t);
+
+  const upd = data.updatedAt ? new Date(data.updatedAt).toLocaleString("th-TH",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}) : "—";
+  $("#heroUpd").textContent="อัปเดตล่าสุด "+upd;
+
+  const card=(id,rem,paid,tot,sub,done)=>{
+    $("#rem-"+id).textContent=fmt(rem);
+    $("#rem-"+id).classList.toggle("done",done);
+    $("#bar-"+id).style.width=pct(paid,tot)+"%";
+    $("#sub-"+id).textContent=sub;
+  };
+  card("phone",T.p.rem,T.p.paid,T.p.t,`จ่ายแล้ว ${T.p.cntP}/${T.p.cnt} งวด`,T.p.rem<=0);
+  card("game",T.g.rem,T.g.paid,T.g.t,`จ่ายแล้ว ${T.g.cntP}/${T.g.cnt} งวด`,T.g.rem<=0);
+  card("trading",T.t.rem,T.t.paid,T.t.t,`คืนแล้ว ${fmt(T.t.paid)}`,T.t.rem<=0);
+  const tp=$("#tpaid"); if(tp) tp.textContent=fmt(T.t.paid);
+
+  // reconcile chip classes
+  ["phone","game"].forEach(id=>{
+    const chips=$("#body-"+id) && $("#body-"+id).querySelectorAll(".chip");
+    if(chips) chips.forEach((c,i)=>c.classList.toggle("paid", data.debts[id].inst[i].paid));
+  });
+}
+
+/* =========================================================
+   MENU + BACKUP
+========================================================= */
+function openMenu(){
+  const mask=el(`<div class="menu-mask"><div class="sheet">
+    <h3>ตัวเลือก</h3>
+    <button class="mrow" data-m="lock"><span class="mi">${IC.lock}</span>ล็อกแอปตอนนี้</button>
+    <button class="mrow" data-m="pin"><span class="mi">${IC.key}</span>เปลี่ยนรหัส PIN</button>
+    <button class="mrow" data-m="backup"><span class="mi">${IC.save}</span>สำรอง / กู้คืนข้อมูล</button>
+  </div></div>`);
+  mask.addEventListener("click",e=>{
+    if(e.target===mask){ mask.remove(); return; }
+    const b=e.target.closest("[data-m]"); if(!b) return;
+    mask.remove();
+    if(b.dataset.m==="lock") showLock("unlock");
+    if(b.dataset.m==="pin") showLock("change");
+    if(b.dataset.m==="backup") openBackup();
+  });
+  document.body.appendChild(mask);
+}
+
+function openBackup(){
+  const json=JSON.stringify(data.debts);
+  const mask=el(`<div class="modal-mask"><div class="modal">
+    <h3>สำรอง / กู้คืนข้อมูล</h3>
+    <p>คัดลอกข้อความด้านล่างเก็บไว้ หรือวางข้อมูลเดิมทับเพื่อกู้คืน (รหัส PIN ไม่ถูกแตะต้อง)</p>
+    <textarea id="bk">${json.replace(/</g,"&lt;")}</textarea>
+    <div class="modal-btns">
+      <button class="mbtn ghost" id="bk-close">ปิด</button>
+      <button class="mbtn ghost" id="bk-copy">คัดลอก</button>
+      <button class="mbtn primary" id="bk-import">กู้คืน</button>
+    </div>
+  </div></div>`);
+  mask.addEventListener("click",e=>{ if(e.target===mask) mask.remove(); });
+  document.body.appendChild(mask);
+  $("#bk-close").addEventListener("click",()=>mask.remove());
+  $("#bk-copy").addEventListener("click",async()=>{
+    try{ await navigator.clipboard.writeText(json); toast("คัดลอกแล้ว"); }
+    catch(e){ $("#bk").select(); toast("กด Ctrl/Cmd+C เพื่อคัดลอก"); }
+  });
+  $("#bk-import").addEventListener("click",()=>{
+    try{
+      const obj=JSON.parse($("#bk").value);
+      if(!obj.phone||!obj.game||!obj.trading) throw 0;
+      data.debts=obj; touch(); mask.remove(); enterApp(); toast("กู้คืนข้อมูลแล้ว");
+    }catch(e){ toast("ข้อมูลไม่ถูกต้อง"); }
+  });
+}
+
+/* =========================================================
+   BOOT
+========================================================= */
+(function init(){
+  const saved=load();
+  data = saved || makeDefault();
+  if(!data.debts) data=makeDefault();
+  if(data.pinHash) showLock("unlock");
+  else showLock("set");
+})();
+</script>
+</body>
+</html>
